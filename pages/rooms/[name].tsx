@@ -45,6 +45,8 @@ import ParticipantsButton from '../../components/ParticipentsButton';
 import useGetIdentity from '../../hooks/useGetIdentity';
 import React from 'react';
 import CopyButton from '../../components/CopyButton';
+import RecordButton from '../../components/RecordButton';
+import RecordTap from '../../components/RecordTab';
 
 const Home: NextPage = () => {
   const router = useRouter();
@@ -165,7 +167,7 @@ const Home: NextPage = () => {
   return (
     <>
       <Head>
-        <title>LiveKit Meet</title>
+        <title>IM3 Space</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
@@ -202,7 +204,7 @@ const Home: NextPage = () => {
           >
             <div className={`${styles.tabContainer} preJoin-wrapper`}>
               {!isGuest ? (
-                <PreJoin 
+                <PreJoin
                   onError={onPreJoinError}
                   defaults={preJoinDefaults}
                   joinLabel={
@@ -335,6 +337,7 @@ const ActiveRoom = ({ roomName, userChoices, onLeave, token }: ActiveRoomProps) 
     };
   }, []);
   const identity = useGetIdentity(token);
+  localStorage.setItem('identity', identity);
   console.log(identity);
 
   const layoutContext = useCreateLayoutContext();
@@ -376,12 +379,12 @@ const ActiveRoom = ({ roomName, userChoices, onLeave, token }: ActiveRoomProps) 
     console.log('width', width);
     return () => window.removeEventListener('resize', handleResize);
   }, [window.innerWidth]);
-  
+
   const CustomSetting = React.useMemo(() => {
     return (
       <div className="lk-chat  !items-start">
         <div className="lk-chat-header">
-          Participants
+          Settings
           <button
             onClick={() => {
               setSettingOpen(false);
@@ -391,11 +394,7 @@ const ActiveRoom = ({ roomName, userChoices, onLeave, token }: ActiveRoomProps) 
             <ChatCloseIcon />
           </button>
         </div>
-        <section
-          className={`flex h-[92.5vh] ${
-            tap == 'record' && 'justify-between'
-          } flex-col gap-4 py-2.5`}
-        >
+        <section className={`flex flex-col gap-4 py-2.5`}>
           {/* <ParticipantsComponent roomName={roomName} />
           <div className="border-t-2 pt-2 flex justify-center w-full border-[var(--lk-border-color)]">
             <button className="lk-button !w-full !mx-2.5">
@@ -443,11 +442,7 @@ const ActiveRoom = ({ roomName, userChoices, onLeave, token }: ActiveRoomProps) 
             </label>
           </form>
           {tap == 'record' ? (
-            <div className="border-t-2 pt-2 flex justify-center w-full border-[var(--lk-border-color)]">
-              <button className="lk-button !w-full !mx-2.5">
-                <span>Start Recording</span>
-              </button>
-            </div>
+            <RecordTap roomName={roomName} token={token} />
           ) : (
             <ParticipantsButton roomName={roomName} identity={identity} />
           )}
@@ -462,7 +457,7 @@ const ActiveRoom = ({ roomName, userChoices, onLeave, token }: ActiveRoomProps) 
       <ChatToggle
         data-lk-unread-msgs="0"
         aria-pressed={chatOpen}
-        className={`lk-button !items-center${
+        className={`lk-button !items-center customChat${
           chatOpen ? '!bg-[var(--lk-control-active-bg)]' : ' !bg-[var(--lk-control-bg)]'
         }`}
         onClick={() => {
@@ -520,10 +515,10 @@ const ActiveRoom = ({ roomName, userChoices, onLeave, token }: ActiveRoomProps) 
         >
           <LayoutContextProvider>
             {/* <ParticipantsButton roomName={roomName} identity={''} /> */}
-            <div className="flex md:flex-row-reverse">
+            <div className="flex absolute w-full h-full flex-row-reverse">
               {renderChat}
               {settingOpen && CustomSetting}
-              <div className="h-screen w-full">
+              <div className="h-full w-full">
                 <VideoConference
                   chatMessageFormatter={formatChatMessageLinks}
                   SettingsComponent={
@@ -531,7 +526,8 @@ const ActiveRoom = ({ roomName, userChoices, onLeave, token }: ActiveRoomProps) 
                   }
                 />{' '}
                 <div className="flex items-center justify-center">
-                  <ControlBar 
+                  <ControlBar
+                    className="custom-controlBar"
                     variation={`${
                       (chatOpen || settingOpen || width <= 1020) && !(width >= 1124)
                         ? 'minimal'
@@ -540,19 +536,18 @@ const ActiveRoom = ({ roomName, userChoices, onLeave, token }: ActiveRoomProps) 
                     controls={{ chat: false, settings: false }}
                   />
                   {
-                    // isCurrentUserAdmin? 
-                    (<section className="md:lk-control-bar  hover:lk-control-bar !items-center !justify-center !pl-0 md:z-0 z-10 absolute md:static flex flex-col md:flex-row top-5 left-4 lg:top-0 lg:left-2 gap-2 lg:!gap-2.5">
-                    {ChatButton}
-                    {SettingButton}
-                    <CopyButton/>
-                  {/* </section>) : 
+                    // isCurrentUserAdmin?
+                    <section className="md:lk-control-bar !border-none hover:lk-control-bar !items-center !justify-center !pl-0 md:z-0 z-10 absolute md:static flex flex-col md:flex-row top-5 left-4 lg:top-0 lg:left-2 gap-2 lg:!gap-2.5 ">
+                      {ChatButton}
+                      {SettingButton}
+                      <CopyButton />
+                      {/* </section>) : 
                    (<section className="lk-control-bar !items-center !justify-center md:!pl-0">
                     {ChatButton}
                     {SettingButton}
                     <CopyButton roomName={roomName}  identity={identity}/> */}
-                  </section>)
+                    </section>
                   }
-                  
                 </div>
               </div>
             </div>
