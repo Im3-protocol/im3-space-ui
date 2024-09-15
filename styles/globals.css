@@ -93,7 +93,7 @@ h2 a {
 /*video conferance*/
 .lk-video-conference {
   /* min-width: 80% !important; */
-  height: 92.5vh !important;
+  height: 92% !important;
 }
 
 .lk-video-conference .lk-grid-layout-wrapper {
@@ -106,6 +106,8 @@ h2 a {
   display: none !important;
 }
 
+
+
 @media screen and (max-width: 700px) {
   .lk-chat {
     left: 0 !important;
@@ -116,4 +118,26 @@ h2 a {
     bottom: 0 !important;
   }
 }
-   
+
+
+@media screen and (max-width: 425px){
+  .lk-video-conference .lk-control-bar {
+    display: flex !important;
+  }
+  .custom-controlBar {
+    display: none !important;
+  }
+  .customChat {
+    display: none !important;
+  } 
+}
+
+@media screen and (max-width: 320px){
+  .lk-video-conference .lk-control-bar {
+    /* min-width: 80% !important; */
+    display: none !important;
+  }
+  .custom-controlBar {
+    display: flex !important;
+  }
+}
