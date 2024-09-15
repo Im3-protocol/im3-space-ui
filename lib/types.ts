@@ -1,4 +1,5 @@
 import { LocalAudioTrack, LocalVideoTrack } from 'livekit-client';
+import { ButtonHTMLAttributes } from 'react';
 
 export interface SessionProps {
   roomName: string;
@@ -14,3 +15,12 @@ export interface TokenResult {
   identity: string;
   accessToken: string;
 }
+
+export type RecordButtonType = ButtonHTMLAttributes<HTMLButtonElement> & {
+  roomName: string;
+  onDataReceived?: any;
+  isAdmin: boolean;
+  className?: string;
+  recordType: any;
+  participantsList: any;
+};
