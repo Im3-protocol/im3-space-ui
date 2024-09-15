@@ -9,7 +9,11 @@ module.exports = {
     "./src/**/*.{js,ts,jsx,tsx,mdx}",
   ],
   theme: {
-    extend: {},
+    extend: {
+      width: {
+        'fill-available': '-webkit-fill-available',
+      },
+    },
   },
   plugins: [],
 }
