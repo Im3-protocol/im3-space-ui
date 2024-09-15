@@ -11,7 +11,7 @@ import {
   safeWallet,
 } from '@rainbow-me/rainbowkit/wallets';
 
-import { APP_CHAINS } from '../constants/chains';
+import { APP_CHAINS } from './chains';
 
 export const getWagmiConfig = () => {
   const projectId = process.env.NEXT_PUBLIC_PROJECT_ID;
