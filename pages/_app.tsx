@@ -11,26 +11,26 @@ function MyApp({ Component, pageProps }: AppProps) {
   return (
     <>
       <DefaultSeo
-        title="IM3 Meet"
+        title="IM3 Space"
         titleTemplate="%s"
-        defaultTitle="IM3 Meet"
-        description="IM3 Meet"
+        defaultTitle="IM3 Space"
+        description="IM3 Space"
         twitter={{
           handle: '@livekitted',
           site: '@livekitted',
           cardType: 'summary_large_image',
         }}
         openGraph={{
-          url: 'https://meet.im3.live',
+          url: 'https://space.im3.live',
           images: [
             {
-              url: 'https://meet.im3.live/images/im3.svg',
+              url: 'https://space.im3.live/images/im3.svg',
               width: 2000,
               height: 1000,
               type: 'image/png',
             },
           ],
-          site_name: 'IM3 Meet',
+          site_name: 'IM3 Space',
         }}
         additionalMetaTags={[
           {
@@ -41,16 +41,16 @@ function MyApp({ Component, pageProps }: AppProps) {
         additionalLinkTags={[
           {
             rel: 'icon',
-            href: '/images/im3.svg',
+            href: '/images/enterRoom/favicon_logo.svg',
           },
           {
             rel: 'apple-touch-icon',
-            href: '/images/im3.svg',
+            href: '/images/enterRoom/favicon_logo.svg',
             sizes: '180x180',
           },
           {
             rel: 'mask-icon',
-            href: '/images/im3.svg',
+            href: '/images/enterRoom/favicon_logo.svg',
             color: '#070707',
           },
         ]}
