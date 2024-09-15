@@ -20,9 +20,6 @@
 }
 
 .logo {
-  display: flex;
-  justify-content: end;
-  align-items: end;
   padding-top: 2rem;
 }
 
@@ -46,7 +43,7 @@
   }
 
   .logo {
-    justify-content: center;
+    justify-content: start;
   }
 
   .subtitle {
@@ -108,4 +105,8 @@
     color: #918f8f;
   
   }
+}
+
+.secondaryTextColor {
+  color: #A086FF;
 }
