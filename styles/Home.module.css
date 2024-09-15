@@ -39,7 +39,7 @@
 }
 
 .bg {
-  background-image: url('../public/images/enterRoom/GrapthBG.svg');
+  background-image: url('../public/images/enterRoom/enterRoomBG.svg');
   background-repeat: no-repeat;
   z-index: -1;
 }
