@@ -13,7 +13,11 @@ interface ParticipantType {
 }
 
 function ParticipantsButton({ roomName, identity }: ParticipantType) {
-  const { participants, fetchParticipants, loading: loadingParticipants } = useListParticipants(roomName);
+  const {
+    participants,
+    fetchParticipants,
+    loading: loadingParticipants,
+  } = useListParticipants(roomName);
   const { admins, fetchAdmins, loading: loadingAdmins } = useGetAdmins(roomName);
   const [isCurrentUserAdmin, setIsCurrentUserAdmin] = useState(false);
   const [isOwner, setIsOwner] = useState(false);
@@ -34,32 +38,35 @@ function ParticipantsButton({ roomName, identity }: ParticipantType) {
 
   useEffect(() => {
     if (admins && admins.length > 0) {
-      const ownerIdentity = admins[0].identity;
+      const ownerIdentity = admins[0].identity.toLowerCase();
 
       // Determine if the current user is the owner
       setIsOwner(ownerIdentity === identity);
 
       // Determine if the current user is an admin
-      setIsCurrentUserAdmin(admins.some((admin) => admin.identity === identity));
+      setIsCurrentUserAdmin(
+        admins.some((admin) => admin.identity.toLowerCase() === identity.toLowerCase()),
+      );
     }
   }, [admins, identity]);
 
-  if (loadingParticipants || loadingAdmins) {
-    return (
-      <div className="side-panel px-2.5">
-        <div className="animate-pulse">
-          <ParticipantBoxLazy />
-          <ParticipantBoxLazy />
-          <ParticipantBoxLazy />
-          <ParticipantBoxLazy />
-          <ParticipantBoxLazy />
-        </div>
-      </div>
-    );
-  }
+  // if (loadingParticipants || loadingAdmins) {
+  //   return (
+  //     <div className="side-panel px-2.5">
+  //       <div className="animate-pulse">
+  //         <ParticipantBoxLazy />
+  //         <ParticipantBoxLazy />
+  //         <ParticipantBoxLazy />
+  //         <ParticipantBoxLazy />
+  //         <ParticipantBoxLazy />
+  //       </div>
+  //     </div>
+  //   );
+  // }
 
   const combinedParticipants = participants.filter(
-    (participant) => !admins.some((admin) => admin.identity === participant.identity)
+    (participant) =>
+      !admins.some((admin) => admin.identity.toLowerCase() === participant.identity.toLowerCase()),
   );
 
   return (
@@ -67,8 +74,8 @@ function ParticipantsButton({ roomName, identity }: ParticipantType) {
       <ul className="flex w-full flex-col gap-2 max-h-[85vh] overscroll-y-auto">
         {/* Admins List */}
         {admins.map((admin, index) => {
-          const isCurrentAdmin = admin.identity === identity;
-          const isAdminOwner = admins[0]?.identity === admin.identity;
+          const isCurrentAdmin = admin.identity.toLowerCase() === identity.toLowerCase();
+          const isAdminOwner = admin.isOwner;
 
           return (
             <li
@@ -91,13 +98,17 @@ function ParticipantsButton({ roomName, identity }: ParticipantType) {
               {/* Conditional rendering for Admins */}
               {(isOwner || (isCurrentUserAdmin && !isAdminOwner)) && !isCurrentAdmin && (
                 <div className="flex items-center justify-start gap-4 w-full mb-2">
-                  <MicButton roomName={roomName} identity={admin.identity} />
+                  <MicButton
+                    roomName={roomName}
+                    identity={admin.identity.toLowerCase()}
+                    isMuted={false}
+                  />
                   <GrantAdminPrivilegesButton
                     roomName={roomName}
-                    identity={admin.identity}
+                    identity={admin.identity.toLowerCase()}
                     participantName={admin.participantName}
                   />
-                  <KickButton roomName={roomName} identity={admin.identity} />
+                  <KickButton roomName={roomName} identity={admin.identity.toLowerCase()} />
                 </div>
               )}
             </li>
@@ -106,8 +117,8 @@ function ParticipantsButton({ roomName, identity }: ParticipantType) {
 
         {/* Participants List */}
         {combinedParticipants.reverse().map((participant, index) => {
-          const isCurrentParticipant = participant.identity === identity;
-
+          const isCurrentParticipant =
+            participant.identity.toLowerCase() === identity.toLowerCase();
           return (
             <li
               key={index}
@@ -125,13 +136,17 @@ function ParticipantsButton({ roomName, identity }: ParticipantType) {
               {/* Conditional rendering for Participants */}
               {(isCurrentUserAdmin || isOwner) && (
                 <div className="flex items-center justify-start gap-4 w-full mb-2">
-                  <MicButton roomName={roomName} identity={participant.identity} />
+                  <MicButton
+                    roomName={roomName}
+                    identity={participant.identity.toLowerCase()}
+                    isMuted={participant.permission.canPublish}
+                  />
                   <GrantAdminPrivilegesButton
                     roomName={roomName}
-                    identity={participant.identity}
+                    identity={participant.identity.toLowerCase()}
                     participantName={participant.name}
                   />
-                  <KickButton roomName={roomName} identity={participant.identity} />
+                  <KickButton roomName={roomName} identity={participant.identity.toLowerCase()} />
                 </div>
               )}
             </li>
