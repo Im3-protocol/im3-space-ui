@@ -15,43 +15,37 @@ interface RecordTabType {
 const RecordTap = ({ roomName, token }: RecordTabType) => {
   const { admins } = useGetAdmins(roomName);
   const identity = useGetIdentity(token);
-  const [recordType, setRecordType] = useState<string | boolean | null>(null);
+  console.log(JSON.parse(localStorage.getItem('recording type')));
+  const [recordType, setRecordType] = useState<string | boolean | null>(
+    JSON.parse(localStorage.getItem('recording type')) ?? false,
+  );
   const [isRec, setIsRec] = useState<boolean>(false);
   const { participants, fetchParticipants } = useListParticipants(roomName);
 
   useLayoutEffect(() => {
     fetchParticipants(roomName);
-  }, []);
+  }, [recordType]);
 
-  console.log('participants in recorder Tab', participants);
-  console.log('this is admins', admins);
   const isAdmin = useMemo(() => {
-    console.log(
-      'is Admin',
-      admins.some((admin) => admin.identity == identity),
-    );
-    console.log(identity);
-
-    return admins.some((admin) => admin.identity == identity);
+    return admins.some((admin) => admin.identity.toLowerCase() == identity.toLowerCase());
   }, [admins]);
 
   const handleDataFromChild = (isRecording: boolean, isType: boolean | string) => {
     // Do something with the received isRecording
-    console.log('from child', isRecording);
     setIsRec(isRecording);
   };
 
   useEffect(() => {
-    const fromLocalRecType = JSON.parse(localStorage.getItem('recording type'));
-    console.log('record type in local', fromLocalRecType);
+    const egressLocalData = localStorage.getItem('recording type');
+    const fromLocalRecType = egressLocalData && JSON.parse(egressLocalData);
+    console.log('form local rec type : ', fromLocalRecType, !fromLocalRecType);
     if (!fromLocalRecType || fromLocalRecType == 'Select recording type') {
-      console.log(fromLocalRecType, 'in if');
       setRecordType(false);
     }
   }, [isRec]);
 
   const renderRecordButton = useCallback(() => {
-    console.log(!recordType);
+    console.log('in render record ', recordType);
     return (
       <RecordButton
         onDataReceived={handleDataFromChild}
@@ -59,13 +53,14 @@ const RecordTap = ({ roomName, token }: RecordTabType) => {
         className={`${!isAdmin && '!cursor-default'} lk-button !w-full !mx-2.5`}
         roomName={roomName}
         isAdmin={isAdmin}
-        recordType={recordType ?? true}
+        identity={identity}
+        recordType={recordType}
       />
     );
   }, [isAdmin, recordType, isRec]);
 
   const DropDown = useMemo(() => {
-    return isAdmin && !isRec && <RecordDropDown setRecordType={setRecordType} />;
+    return isAdmin && !isRec && <RecordDropDown setRecordType={setRecordType} roomName={roomName} />;
   }, [isAdmin, isRec]);
 
   return (
