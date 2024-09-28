@@ -18,6 +18,7 @@ export interface TokenResult {
 
 export type RecordButtonType = ButtonHTMLAttributes<HTMLButtonElement> & {
   roomName: string;
+  identity: string;
   onDataReceived?: any;
   isAdmin: boolean;
   className?: string;
