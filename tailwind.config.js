@@ -13,6 +13,9 @@ module.exports = {
       width: {
         'fill-available': '-webkit-fill-available',
       },
+      backgroundImage: {
+        'graph-bg': "url('/images/enterRoom/GrapthBG.svg')",
+      }
     },
   },
   plugins: [],
