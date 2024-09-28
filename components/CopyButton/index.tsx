@@ -3,7 +3,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { useCopyToClipboard } from '../../hooks/useCopyToClipboard';
 import Image from 'next/image';
 
-const CopyButton = () => {
+const CopyButton = ({className}) => {
   const [isCLick, setIsClick] = useState(false);
   const [url, setUrl] = useState('Copy Space Url');
 
@@ -25,7 +25,7 @@ const CopyButton = () => {
   const updateTextOfCopy = useMemo(() => {
     return (
       <p className="text-sm min-[1020px]:inline-block hidden">
-        {isCLick ? 'Copied' : 'Copy Space Url'}
+        {isCLick ? 'Copied' : 'Copy Space Link'}
       </p>
     );
   }, [isCLick]);
@@ -36,7 +36,7 @@ const CopyButton = () => {
       onClick={() => {
         setIsClick(true);
       }}
-      className="lk-button lk-focus-toggle-button !bg-['#373737'] md:!absolute md:!top-4 md:!left-4 md:!p-1.5 md:!px-2 "
+      className={`${className} lk-button lk-focus-toggle-button !bg-['#373737']  md:!top-4 md:!left-4 md:!p-1.5 md:!px-2 `}
     >
       <Image alt="copy" width={16} height={16} src={'/images/copy.svg'} />
       {updateTextOfCopy}

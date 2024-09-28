@@ -2,14 +2,14 @@ import React, { useEffect, useState } from 'react';
 import useGrantSpeak from '../../hooks/useGrantPrivileges';
 import Image from 'next/image';
 
-function MicButton({ roomName, identity }) {
+function MicButton({ roomName, identity , isMuted}) {
   const { grantSpeak } = useGrantSpeak();
-  const [isMic, setIsMic] = useState(false);
+  const [isMic, setIsMic] = useState(isMuted);
   const [svgMic, setSvgMic] = useState<string>('/');
 
   const handleGrantSpeak = (identity: string, roomName: string, accessType: string) => {
+    console.log(isMic , accessType);
     setIsMic((prevMicState) => !prevMicState);
-    console.log(isMic);
     grantSpeak(identity, roomName, accessType);
   };
   useEffect(() => {
