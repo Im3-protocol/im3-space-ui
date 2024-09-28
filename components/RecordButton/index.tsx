@@ -1,9 +1,11 @@
 'use client';
-import React, { useState, useEffect, useMemo, memo } from 'react';
+import React, { useState, useEffect, useMemo, memo, useCallback } from 'react';
 import { useCompositeRecorder } from '../../hooks/useCompositeRecorder';
 import { RecordButtonType } from '../../lib/types';
 import { RecordingTimer } from '../RecordingTimer';
 import { useLayoutEffect } from 'react';
+import useGetRecordConfig from '../../hooks/useRecordConfig';
+import { useListParticipants } from '../../hooks/useParticipantsList';
 
 function RecordButton({
   roomName,
@@ -12,9 +14,17 @@ function RecordButton({
   recordType,
   participantsList,
   onDataReceived,
-}: RecordButtonType) {
+  identity,
+}: // setRecordType,
+RecordButtonType) {
   const { isRecording, hasError, startRecording, stopRecording } =
     useCompositeRecorder(participantsList);
+  const { participants, fetchParticipants } = useListParticipants(roomName);
+
+  useLayoutEffect(() => {
+    fetchParticipants(roomName);
+  }, [recordType]);
+
   const [egressId, setEgressId] = useState<string | null>(null);
   useLayoutEffect(() => {
     const storedEgressId = localStorage.getItem('egressId');
@@ -23,33 +33,51 @@ function RecordButton({
     }
   }, []);
 
-  useEffect(() => {
-    console.log('this is recording', isRecording);
-    console.log('this is type', recordType);
-  }, [isRecording]);
+  const isMute = useMemo(() => {
+    console.log('this is participent list', participants);
+    let isMuted = true;
+    const getThisParticipent = participants.filter(
+      (part) => part.identity.toLowerCase() == identity.toLowerCase(),
+    );
+
+    if (
+      getThisParticipent[0] &&
+      getThisParticipent[0].tracks.length > 0 &&
+      getThisParticipent[0].tracks[0].type == 'AUDIO'
+    ) {
+      console.log(
+        'this is the specific part ',
+        getThisParticipent[0].tracks.length,
+        getThisParticipent[0].tracks[0].type,
+      );
+      isMuted = getThisParticipent[0].tracks[0].muted;
+      console.log('is Muted or not ', isMuted, getThisParticipent[0].tracks[0].type);
+    }
+    return isMuted;
+  }, [recordType, participants]);
+
+  const configData = useGetRecordConfig(roomName);
+  const isRoomRecord = configData?.recordRoom;
 
   const startRecordingHandler = async () => {
     try {
       const response = await startRecording(roomName, recordType);
+      console.log('in start', recordType);
       const responseEgressId = response?.data?.egressId;
       setEgressId(responseEgressId);
       localStorage.setItem('record time', JSON.stringify(new Date().getTime()));
       // Store egressId in local storage
-      handleClick(!isRecording);
+      handleClick(!!responseEgressId);
       localStorage.setItem('egressId', responseEgressId);
-      console.log('Egress ID received:', responseEgressId);
-    } catch (error) {
-      console.error('Failed to start recording:', error);
-    }
+    } catch (error) {}
   };
 
   const stopRecordingHandler = () => {
     if (!egressId) {
-      console.error('No egressId available to stop recording');
       return;
     }
     stopRecording(egressId);
-    handleClick(!isRecording);
+    handleClick(false);
     localStorage.removeItem('egressId');
     localStorage.removeItem('record time');
     localStorage.removeItem('recording type');
@@ -61,27 +89,39 @@ function RecordButton({
   }, [isAdmin]);
 
   const handleClick = (data: boolean) => {
-    console.log('from t handle click', data);
     onDataReceived(data);
   };
+
+  const checking = useMemo(() => {
+    console.log(recordType, JSON.parse(localStorage.getItem('recording type')), 5550);
+    console.log(isMute);
+    if ((recordType === 'adminAudio' || recordType == `Record Admin's Audio`) && isMute) {
+      return <span> Please open your mic before recording</span>;
+    } else {
+      return <span>Start Recording</span>;
+    }
+  }, [recordType, participants]);
 
   return (
     <>
       {hasError && <p>{hasError}</p>}
       {isAdmin ? (
         <button
-          className={`${className} ${isRecording && '!bg-[var(--lk-danger)]'} lk-button ${
-            !recordType ? '!cursor-default' : '!cursor-pointer'
+          className={`${className} lk-button ${
+            !recordType ||
+            ((recordType === 'adminAudio' || recordType == `Record Admin's Audio`) && isMute)
+              ? '!cursor-default'
+              : '!cursor-pointer'
           } !w-full !mx-2.5`}
-          disabled={!recordType || (egressId === undefined && recordType === 'adminAudio')}
-          onClick={isRecording ? stopRecordingHandler : startRecordingHandler}
+          disabled={
+            (isMute && (recordType === 'adminAudio' || recordType == `Record Admin's Audio`)) ||
+            !recordType ||
+            !isRoomRecord
+          }
+          onClick={egressId ? stopRecordingHandler : startRecordingHandler}
         >
-          {!isRecording ? (
-            egressId === undefined && recordType === 'adminAudio' ? (
-              <span> Please open your mic before recording</span>
-            ) : (
-              <span>Start Recording</span>
-            )
+          {!egressId ? (
+            checking
           ) : (
             <>
               <RecordingTimer startTime={JSON.parse(localStorage.getItem('record time'))} />
@@ -98,4 +138,4 @@ function RecordButton({
   );
 }
 
-export default memo(RecordButton);
+export default RecordButton;
