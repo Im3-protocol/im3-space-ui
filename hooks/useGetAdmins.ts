@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { axiosInstance } from "../pages/api/base";
 
-const useGetAdmins = (roomName: string) => {
+const useGetAdmins = (roomName: string | string[] | undefined | any) => {
     const [admins, setAdmins] = useState<any[]>([]);
     const [loading, setLoading] = useState<boolean>(false);
     const [error, setError] = useState<string | null>(null);
@@ -10,7 +10,7 @@ const useGetAdmins = (roomName: string) => {
         fetchAdmins(roomName);
     }, [roomName]); 
 
-    const fetchAdmins = async (roomName: string) => {
+    const fetchAdmins = async (roomName: string | any) => {
         setLoading(true);
         setError(null);
         try {
