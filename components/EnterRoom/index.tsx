@@ -7,7 +7,7 @@ import Logo from "../../public/images/im3.svg"
 const EnterRoom = () => {
     return(
         <section className="flex flex-col justify-center items-start">
-            <div className={`${styles.logo} mx-12 mt-6`}>
+            <div className={`${styles.logo} mx-auto md:mx-12 mt-6`}>
                 <Image
                 className="mb-48"
                     src={Logo}
@@ -16,7 +16,7 @@ const EnterRoom = () => {
                     alt="Im3_Logo"
                 />
             </div>
-            <div className={`${styles.page}`}>
+            <div className={`${styles.page} px-2`}>
                 <h1 className={`${styles.tittle}`}>Video Calls and Spaces 
                     via a <span className={styles.secondaryTextColor}>Decentralized</span> Public Network </h1>
                 <p className={styles.subtitle}>Connect with your web3 identity, mint NFTs and POAPs, and more.</p>
